@@ -1,0 +1,25 @@
+# Dependensi & hasil build
+node_modules/
+dist/
+dev-dist/
+
+# Rahasia & database lokal
+.env
+.env.*
+!.env.example
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Data penelitian (tidak pernah di-commit — lihat CLAUDE.md §10)
+analysis/data/
+analysis/scripts/hasil/
+hasil/
+
+# Sistem / editor
+.DS_Store
+Thumbs.db
+desktop.ini

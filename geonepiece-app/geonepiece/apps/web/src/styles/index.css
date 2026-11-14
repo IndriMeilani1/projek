@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/*
+ * Token desain GeOnePiece — tema "Petualangan Bajak Laut".
+ * Palet: merah bendera, kuning emas harta, biru laut dalam, krem kertas peta kuno.
+ * Semua ornamen (poster DICARI, kompas, tali) digambar orisinal — tanpa karakter/logo anime (lihat CLAUDE.md §11).
+ *
+ * Warna semantik unsur bangun dipakai di SELURUH aplikasi (gambar, rumus, label) dan TIDAK ikut tema:
+ *   alas = biru · tinggi = oranye · diagonal = ungu · potongan = hijau · sisi = abu
+ * "static" memastikan variabel CSS selalu tersedia untuk dipakai langsung di SVG (var(--color-alas)).
+ */
+@theme static {
+  --color-alas: #2563eb;
+  --color-tinggi: #ea580c;
+  --color-diagonal: #7c3aed;
+  --color-potongan: #16a34a;
+  --color-sisi: #475569;
+
+  /* Biru laut dalam (warna utama navigasi & judul) */
+  --color-laut-50: #eef5fb;
+  --color-laut-100: #d5e7f4;
+  --color-laut-200: #a8cde8;
+  --color-laut-500: #2b7bb9;
+  --color-laut-600: #1d6299;
+  --color-laut-700: #154c7a;
+  --color-laut-800: #0f3a5e;
+  --color-laut-900: #0b2a47;
+  --color-laut-950: #071c31;
+
+  /* Merah bendera (aksi utama) */
+  --color-merah-50: #fdeeec;
+  --color-merah-100: #fad6d1;
+  --color-merah-500: #d93a2b;
+  --color-merah-600: #bf2a1d;
+  --color-merah-700: #9b1c13;
+  --color-merah-900: #5e0f0a;
+
+  /* Kuning emas (harta, sorotan, aktif) */
+  --color-emas-50: #fff9e6;
+  --color-emas-100: #fdeec0;
+  --color-emas-200: #fae08a;
+  --color-emas-300: #f5cc55;
+  --color-emas-400: #efb52c;
+  --color-emas-500: #d99a1a;
+  --color-emas-600: #b97c0f;
+  --color-emas-700: #8a5a0b;
+
+  /* Krem kertas peta kuno */
+  --color-kertas-50: #fdf8ec;
+  --color-kertas-100: #f7ecd2;
+  --color-kertas-200: #eddcb0;
+  --color-kertas-300: #dcc187;
+  --color-kertas-500: #a9874f;
+  --color-kertas-700: #6f522a;
+  --color-kertas-900: #3d2a14;
+
+  --color-pasir-50: #fdf8ec;
+  --color-pasir-100: #f7ecd2;
+  --color-pasir-300: #efb52c;
+  --color-karang-500: #d93a2b;
+
+  /* Netral dihangatkan menjadi "tinta sepia" agar menyatu dengan kertas peta */
+  --color-slate-50: #faf4e6;
+  --color-slate-100: #f1e6cc;
+  --color-slate-200: #e2d2ae;
+  --color-slate-300: #cdb78f;
+  --color-slate-400: #9d8663;
+  --color-slate-500: #77624a;
+  --color-slate-600: #5c4a36;
+  --color-slate-700: #473828;
+  --color-slate-800: #33281c;
+  --color-slate-900: #221a11;
+
+  --font-sans: "Nunito", ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Pirata One", "Rye", Georgia, "Times New Roman", serif;
+  --font-poster: "Rye", "Pirata One", Georgia, serif;
+
+  --animate-pop: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-shake: shake 0.4s ease-in-out both;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-glow: glow 1.6s ease-in-out infinite;
+  --animate-rise: rise 0.3s ease-out both;
+  --animate-sway: sway 5s ease-in-out infinite;
+  --animate-needle: needle 6s ease-in-out infinite;
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 0 rgb(250 204 21 / 0)); }
+    50% { filter: drop-shadow(0 0 6px rgb(250 204 21 / 0.95)); }
+  }
+  @keyframes rise {
+    0% { transform: translateY(6px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(1.5deg); }
+  }
+  @keyframes needle {
+    0%, 100% { transform: rotate(var(--needle, 0deg)); }
+    45% { transform: rotate(calc(var(--needle, 0deg) + 6deg)); }
+    70% { transform: rotate(calc(var(--needle, 0deg) - 4deg)); }
+  }
+}
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    @apply bg-kertas-100 text-slate-800 antialiased;
+    font-feature-settings: "tnum";
+    /* Kertas peta: noda tua di tepi + serat halus */
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgb(255 255 255 / 0.55), transparent 55%),
+      radial-gradient(ellipse at 100% 100%, rgb(169 135 79 / 0.22), transparent 50%),
+      radial-gradient(ellipse at 0% 100%, rgb(169 135 79 / 0.15), transparent 45%),
+      repeating-linear-gradient(115deg, rgb(111 82 42 / 0.025) 0 2px, transparent 2px 9px);
+    background-attachment: fixed;
+  }
+  h1, h2 { text-wrap: balance; }
+  button, [role="button"] { touch-action: manipulation; }
+  :focus-visible { outline: 3px solid var(--color-emas-400); outline-offset: 2px; }
+  ::selection { background: var(--color-emas-200); color: var(--color-laut-900); }
+}
+
+/* Kartu = lembar kertas peta dengan bingkai tinta */
+@utility card {
+  @apply rounded-3xl bg-kertas-50 ring-1 ring-kertas-300/80;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 2px 0 rgb(111 82 42 / 0.12), 0 8px 20px -12px rgb(61 42 20 / 0.35);
+}
+@utility btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-2 font-extrabold transition active:translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40; }
+/* Tombol utama: merah bendera dengan "papan" gelap di bawah */
+@utility btn-primary {
+  @apply btn bg-merah-500 text-white hover:bg-merah-600;
+  box-shadow: 0 3px 0 var(--color-merah-700), 0 6px 14px -6px rgb(155 28 19 / 0.55);
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.2);
+}
+@utility btn-soft { @apply btn bg-emas-100 text-kertas-900 ring-1 ring-emas-300 hover:bg-emas-200; }
+@utility btn-ghost { @apply btn bg-transparent text-slate-600 hover:bg-kertas-200/60; }
+@utility btn-warn { @apply btn bg-emas-100 text-emas-700 hover:bg-emas-200; }
+@utility chip { @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-bold; }
+@utility input { @apply min-h-11 w-full rounded-2xl border-2 border-kertas-300 bg-white/80 px-4 py-2 text-lg outline-none transition focus:border-emas-400 focus:bg-white; }
+@utility label { @apply mb-1 block text-sm font-extrabold text-slate-600; }
+@utility formula-token { @apply rounded-lg px-1.5 transition; }
+@utility font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.01em; }
+@utility font-poster { font-family: var(--font-poster); font-weight: 400; letter-spacing: 0.04em; }
+
+/* Garis tali kapal (dekorasi pemisah) */
+@utility rope {
+  height: 6px;
+  background:
+    repeating-linear-gradient(135deg, var(--color-emas-600) 0 4px, var(--color-emas-300) 4px 8px);
+  border-radius: 999px;
+}
+
+/* Permukaan laut malam untuk header/hero */
+@utility sea {
+  background-color: var(--color-laut-900);
+  background-image:
+    radial-gradient(ellipse at 80% -20%, rgb(239 181 44 / 0.25), transparent 55%),
+    radial-gradient(ellipse at 0% 120%, rgb(43 123 185 / 0.55), transparent 60%),
+    repeating-radial-gradient(circle at 50% 140%, rgb(255 255 255 / 0.05) 0 2px, transparent 2px 22px);
+}
+
+/* Unsur bangun yang sedang disorot berdenyut lembut */
+.hl-glow { animation: var(--animate-glow); }
+
+/* Teks label di dalam SVG: diberi "halo" putih agar terbaca di atas garis */
+.svg-label { paint-order: stroke; stroke: white; stroke-width: 5px; stroke-linejoin: round; font-weight: 800; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
