@@ -1,6 +1,18 @@
-import { ITEM_ORDER, ITEM_PROCESS, MAX_PER_ITEM, MAX_SCORE } from '@/content/tests';
+import { ITEM_ORDER, ITEM_PROCESS, MAX_NILAI, MAX_PER_ITEM, MAX_SCORE } from '@/content/tests';
 
-/** Ringkasan skor satu attempt. scores = { '1.1': 3, ... } */
+/** Raw score (0–24) → nilai (0–100), one decimal. */
+export const toNilai = (total) => Math.round((total / MAX_SCORE) * MAX_NILAI * 10) / 10;
+
+/**
+ * Sum the points a grader gave per solution stage, clamped to each stage's maximum.
+ * @param {{points:number}[]} stages  stage definitions from KEYS[no].stages
+ * @param {number[]} given            points given per stage (same order)
+ */
+export function stageTotal(stages, given = []) {
+  return stages.reduce((sum, st, i) => sum + Math.min(st.points, Math.max(0, Number(given[i]) || 0)), 0);
+}
+
+/** Ringkasan skor satu attempt. scores = { '1': 6, '2': 4, ... } (skor mentah per soal, maks 6). */
 export function summarize(scores = {}) {
   const per = { R: 0, F: 0, E: 0, I: 0 };
   const perMax = { R: 0, F: 0, E: 0, I: 0 };
@@ -18,7 +30,7 @@ export function summarize(scores = {}) {
   }
   return {
     total,
-    nilai: Math.round((total / MAX_SCORE) * 1000) / 10,
+    nilai: toNilai(total),
     scored,
     complete: scored === ITEM_ORDER.length,
     per,
@@ -44,7 +56,7 @@ const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
 
 /** CSV skor per attempt (pemisah ";" dan koma desimal agar rapi di Excel Indonesia). */
 export function scoresCsv(attempts, scoresById) {
-  const head = ['kode_kelas', 'kode_siswa', 'tes', 'paket', 'dikirim', ...ITEM_ORDER, 'total', 'nilai', 'R', 'F', 'E', 'I'];
+  const head = ['kode_kelas', 'kode_siswa', 'tes', 'paket', 'dikirim', ...ITEM_ORDER.map((n) => `soal_${n}`), 'total', 'nilai', 'R', 'F', 'E', 'I'];
   const rows = attempts.map((a) => {
     const sc = scoresById[a.id] ?? {};
     const s = summarize(sc);
@@ -71,7 +83,7 @@ export function gainRows(attempts, scoresById) {
 }
 
 export function gainCsv(rows) {
-  const head = ['kode_kelas', 'kode_siswa', 'pretest', 'posttest', 'n_gain', 'kategori'];
-  const body = rows.map((r) => [r.classCode, r.studentCode, r.pre?.total ?? '', r.post?.total ?? '', num(r.gain), r.category]);
+  const head = ['kode_kelas', 'kode_siswa', 'skor_pretest', 'skor_posttest', 'nilai_pretest', 'nilai_posttest', 'n_gain', 'kategori'];
+  const body = rows.map((r) => [r.classCode, r.studentCode, r.pre?.total ?? '', r.post?.total ?? '', num(r.pre?.nilai), num(r.post?.nilai), num(r.gain), r.category]);
   return '﻿' + [head, ...body].map((r) => r.map(cell).join(';')).join('\n');
 }

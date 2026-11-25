@@ -12,7 +12,7 @@ Keluaran ditulis ke layar dan ke folder ./hasil/ (CSV).
 
 Format validasi_ahli.csv (untuk Aiken's V): baris = butir/aspek, kolom = validator, isi = skor 1..c
   butir;V1;V2;V3
-  1.1;4;4;3
+  soal_1;4;4;3
 """
 from __future__ import annotations
 
@@ -24,17 +24,20 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-ITEMS = ["1.1", "1.2", "2.1", "2.2", "3.1", "3.2", "4.1", "4.2", "5.1", "5.2"]
-PROCESS = {"R": "Penalaran", "F": "Merumuskan", "E": "Menerapkan", "I": "Menafsirkan & Mengevaluasi"}
-MAX_ITEM = 4
-MAX_TOTAL = MAX_ITEM * len(ITEMS)
+# 4 soal, masing-masing satu indikator literasi; skor per tahapan, maks 6 per soal.
+ITEMS = ["soal_1", "soal_2", "soal_3", "soal_4"]
+PROCESS = {"R": "Penalaran Matematis", "F": "Merumuskan", "E": "Menerapkan", "I": "Menafsirkan & Mengevaluasi"}
+ITEM_PROCESS = {"R": ["soal_1"], "F": ["soal_2"], "E": ["soal_3"], "I": ["soal_4"]}
+MAX_ITEM = 6
+MAX_TOTAL = MAX_ITEM * len(ITEMS)  # 24 (skor mentah)
+MAX_NILAI = 100  # nilai = skor / 24 * 100
 OUT = Path("hasil")
 
 
 def read_scores(path: str) -> pd.DataFrame:
     df = pd.read_csv(path, sep=";", decimal=",", dtype={"kode_siswa": str, "kode_kelas": str}, encoding="utf-8-sig")
     df.columns = [str(c).strip() for c in df.columns]
-    for c in ITEMS + ["total", "R", "F", "E", "I"]:
+    for c in ITEMS + ["total", "nilai", "R", "F", "E", "I"]:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors="coerce")
     return df
@@ -61,8 +64,11 @@ def efektivitas(path: str) -> None:
         print("Data berpasangan terlalu sedikit untuk analisis.")
         return
 
-    x, y = pair["total_pre"].to_numpy(float), pair["total_post"].to_numpy(float)
-    pair["n_gain"] = [(b - a) / (MAX_TOTAL - a) if a < MAX_TOTAL else np.nan for a, b in zip(x, y)]
+    # Analisis memakai nilai 0–100 (N-gain tidak berubah karena skalanya proporsional).
+    pair["nilai_pre"] = pair["total_pre"] / MAX_TOTAL * MAX_NILAI
+    pair["nilai_post"] = pair["total_post"] / MAX_TOTAL * MAX_NILAI
+    x, y = pair["nilai_pre"].to_numpy(float), pair["nilai_post"].to_numpy(float)
+    pair["n_gain"] = [(b - a) / (MAX_NILAI - a) if a < MAX_NILAI else np.nan for a, b in zip(x, y)]
     pair["kategori"] = pair["n_gain"].map(kategori_ngain)
 
     desk = pd.DataFrame(
@@ -72,7 +78,7 @@ def efektivitas(path: str) -> None:
         },
         index=["rata-rata", "simpangan baku", "minimum", "maksimum"],
     ).round(2)
-    print("\nStatistik deskriptif (skor 0–40):\n", desk)
+    print("\nStatistik deskriptif (nilai 0–100):\n", desk)
 
     g_mean = pair["n_gain"].mean()
     print(f"\nRata-rata N-gain = {g_mean:.3f} ({kategori_ngain(g_mean)})")
@@ -93,7 +99,7 @@ def efektivitas(path: str) -> None:
 
     rows = []
     for k, nama in PROCESS.items():
-        items_k = {"R": ["2.1", "5.1", "5.2"], "F": ["3.1", "4.1"], "E": ["1.1", "2.2", "4.2"], "I": ["1.2", "3.2"]}[k]
+        items_k = ITEM_PROCESS[k]
         mx = MAX_ITEM * len(items_k)
         a, b = pair[f"{k}_pre"].mean(), pair[f"{k}_post"].mean()
         rows.append({"proses": nama, "pre_%": round(a / mx * 100, 1), "post_%": round(b / mx * 100, 1), "n_gain": round((b - a) / (mx - a), 3) if a < mx else np.nan})
@@ -101,7 +107,7 @@ def efektivitas(path: str) -> None:
     print("\nCapaian per proses literasi:\n", proc.to_string(index=False))
 
     OUT.mkdir(exist_ok=True)
-    pair.reset_index()[["kode_kelas", "kode_siswa", "total_pre", "total_post", "n_gain", "kategori"]].to_csv(OUT / "ngain_per_siswa.csv", sep=";", decimal=",", index=False)
+    pair.reset_index()[["kode_kelas", "kode_siswa", "total_pre", "total_post", "nilai_pre", "nilai_post", "n_gain", "kategori"]].to_csv(OUT / "ngain_per_siswa.csv", sep=";", decimal=",", index=False)
     proc.to_csv(OUT / "ngain_per_proses.csv", sep=";", decimal=",", index=False)
     print(f"\nTersimpan: {OUT/'ngain_per_siswa.csv'}, {OUT/'ngain_per_proses.csv'}")
 

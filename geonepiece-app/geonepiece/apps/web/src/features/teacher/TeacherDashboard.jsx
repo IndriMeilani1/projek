@@ -3,21 +3,22 @@ import { createStore, useStore } from '@/stores/createStore';
 import { useAllAttempts } from '@/features/assessment/attempts';
 import { testToken, localDate } from '@/features/assessment/token';
 import { fetchClassAttempts, hasApi } from '@/features/assessment/sync';
-import { gainCsv, gainRows, scoresCsv, summarize } from '@/features/assessment/scoring';
-import { allItems, ITEM_ORDER, ITEM_PROCESS, MAX_SCORE, PACKAGES, PROCESS } from '@/content/tests';
-import { GENERAL_RUBRIC, KEYS } from '@/content/keys';
+import { gainCsv, gainRows, scoresCsv, stageTotal, summarize } from '@/features/assessment/scoring';
+import { allItems, ITEM_ORDER, ITEM_PROCESS, MAX_NILAI, MAX_PER_ITEM, MAX_SCORE, PACKAGES, PROCESS } from '@/content/tests';
+import { KEYS, SCORING_GUIDE } from '@/content/keys';
 import { Feedback, Icon, PageHeader, Tabs } from '@/components/ui';
 import { downloadFile } from '@/utils/storage';
+import { AiSettings } from './AiSettings';
 import { fmt } from '@/utils/format';
 
 /*
  * Mode Guru/Peneliti (bekerja offline):
  *  - Token tes harian per kelas
  *  - Mengumpulkan jawaban: dari HP ini, file .json siswa, atau API
- *  - Menilai jawaban uraian dengan rubrik 0–4
+ *  - Menilai jawaban uraian per tahapan penyelesaian (6 poin per soal, nilai maks 100)
  *  - Rekap skor, per proses literasi, N-gain, dan ekspor CSV
  */
-const teacherStore = createStore('teacher', { pin: '2026', unlocked: false, imported: {}, scores: {}, notes: {} });
+const teacherStore = createStore('teacher', { pin: '2026', unlocked: false, imported: {}, scores: {}, stages: {}, notes: {} });
 const setT = (patch) => teacherStore.set((s) => ({ ...s, ...(typeof patch === 'function' ? patch(s) : patch) }));
 
 export default function TeacherDashboard() {
@@ -28,7 +29,7 @@ export default function TeacherDashboard() {
     <div>
       <PageHeader
         title="Mode Guru / Peneliti"
-        subtitle="Token tes, penilaian rubrik, rekap N-gain, ekspor"
+        subtitle="Token tes, penilaian per tahap, rekap nilai (0–100) & N-gain, ekspor"
         back="/"
         right={
           <button className="btn-ghost" onClick={() => setT({ unlocked: false })}>
@@ -201,10 +202,10 @@ function DataTab() {
   );
 }
 
-// ---------- Penilaian rubrik ----------
+// ---------- Penilaian per tahapan ----------
 function ScoringTab() {
   const attempts = useCombinedAttempts();
-  const { scores, notes } = useStore(teacherStore);
+  const { scores, stages = {}, notes } = useStore(teacherStore);
   const [sel, setSel] = useState(attempts[0]?.id ?? null);
   const [itemIdx, setItemIdx] = useState(0);
   const attempt = attempts.find((a) => a.id === sel);
@@ -213,12 +214,20 @@ function ScoringTab() {
 
   const pkg = PACKAGES[attempt?.package ?? 'A'];
   const items = allItems(pkg);
-  const item = items[itemIdx];
+  const item = items[Math.min(itemIdx, items.length - 1)];
   const ans = attempt?.answers?.[item.no] ?? {};
   const key = KEYS[item.no];
   const myScores = scores[attempt?.id] ?? {};
-  const setScore = (v) => setT((s) => ({ scores: { ...s.scores, [attempt.id]: { ...(s.scores[attempt.id] ?? {}), [item.no]: v } } }));
+  const given = stages[attempt?.id]?.[item.no] ?? [];
+  const scored = typeof myScores[item.no] === 'number';
+  const setStages = (next) =>
+    setT((s) => ({
+      stages: { ...(s.stages ?? {}), [attempt.id]: { ...(s.stages?.[attempt.id] ?? {}), [item.no]: next } },
+      scores: { ...s.scores, [attempt.id]: { ...(s.scores[attempt.id] ?? {}), [item.no]: stageTotal(key.stages, next) } },
+    }));
+  const setStage = (i, v) => setStages(key.stages.map((_, j) => (j === i ? v : given[j] ?? 0)));
   const noteKey = `${attempt?.id}|${item.no}`;
+  const summary = summarize(myScores);
 
   return (
     <div className="grid gap-4 lg:grid-cols-[260px_1fr]">
@@ -226,54 +235,107 @@ function ScoringTab() {
         {attempts.map((a) => {
           const s = summarize(scores[a.id]);
           return (
-            <button key={a.id} onClick={() => { setSel(a.id); setItemIdx(0); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm ${a.id === sel ? 'bg-laut-100 font-extrabold' : 'hover:bg-slate-50'}`}>
+            <button
+              key={a.id}
+              onClick={() => {
+                setSel(a.id);
+                setItemIdx(0);
+              }}
+              className={`flex min-h-11 w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm ${a.id === sel ? 'bg-laut-100 font-extrabold' : 'hover:bg-slate-50'}`}
+            >
               <span>
                 {a.studentCode} <span className="text-slate-500">· {a.kind === 'pre' ? 'Pre' : 'Post'}</span>
               </span>
-              <span className={`chip px-2 py-0 text-xs ${s.complete ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>{s.scored}/10</span>
+              <span className={`chip px-2 py-0 text-xs ${s.complete ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                {s.complete ? fmt(s.nilai) : `${s.scored}/${ITEM_ORDER.length}`}
+              </span>
             </button>
           );
         })}
       </aside>
       {attempt && (
         <section className="space-y-3">
-          <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
+          <div className="flex flex-wrap items-center gap-1.5">
             {items.map((it, i) => (
-              <button key={it.no} onClick={() => setItemIdx(i)} className={`size-11 shrink-0 rounded-xl text-sm font-extrabold ring-2 ${i === itemIdx ? 'bg-laut-700 text-white ring-laut-700' : typeof myScores[it.no] === 'number' ? 'bg-emerald-50 ring-emerald-200' : 'bg-white ring-slate-200'}`}>
+              <button
+                key={it.no}
+                onClick={() => setItemIdx(i)}
+                className={`size-11 shrink-0 rounded-xl text-sm font-extrabold ring-2 ${it.no === item.no ? 'bg-laut-700 text-white ring-laut-700' : typeof myScores[it.no] === 'number' ? 'bg-emerald-50 ring-emerald-200' : 'bg-white ring-slate-200'}`}
+              >
                 {it.no}
               </button>
             ))}
+            <span className="chip ml-auto bg-laut-900 text-emas-300">
+              Skor {summary.total}/{MAX_SCORE} · Nilai {fmt(summary.nilai)}/{MAX_NILAI}
+            </span>
           </div>
           <div className="grid gap-3 xl:grid-cols-2">
             <div className="card space-y-2 p-4">
               <p className="text-xs font-bold uppercase text-slate-500">
                 {attempt.classCode}/{attempt.studentCode} · Paket {attempt.package} · Soal {item.no} · {PROCESS[ITEM_PROCESS[item.no]]}
               </p>
+              <p className="text-sm text-slate-600">{item.unit.sentences.join(' ')}</p>
               <p className="font-semibold">{item.prompt}</p>
-              {item.type === 'choice' && (
-                <p className="font-bold">
-                  Pilihan: {ans.choice ?? '—'} {ans.choice && (ans.choice === key.choice ? '✓ benar' : '✗')}
-                </p>
-              )}
-              <div className="min-h-24 whitespace-pre-wrap rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">{ans.text?.trim() || <i className="text-slate-400">(tidak ada jawaban tertulis)</i>}</div>
+              <div className="min-h-24 whitespace-pre-wrap rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                {ans.text?.trim() || <i className="text-slate-400">(tidak ada jawaban tertulis)</i>}
+              </div>
               {ans.sketch && <img src={ans.sketch} alt="Sketsa siswa" className="w-full rounded-xl ring-1 ring-slate-200" />}
             </div>
             <div className="card space-y-3 p-4">
               <div>
                 <p className="text-xs font-bold uppercase text-laut-700">Kunci Paket {attempt.package}</p>
-                <p className="text-sm">{key[attempt.package]}</p>
-                <p className="mt-2 text-xs text-slate-600">{key.notes}</p>
+                <p className="text-sm">{key.answer[attempt.package]}</p>
               </div>
               <div className="space-y-1.5">
-                {[4, 3, 2, 1, 0].map((v) => (
-                  <button key={v} onClick={() => setScore(v)} className={`flex w-full gap-3 rounded-2xl p-2 text-left text-sm ring-2 transition ${myScores[item.no] === v ? 'bg-laut-700 text-white ring-laut-700' : 'bg-white ring-slate-200 hover:ring-laut-200'}`}>
-                    <b className="w-5 text-center text-lg">{v}</b>
-                    <span>{GENERAL_RUBRIC[ITEM_PROCESS[item.no]][v]}</span>
-                  </button>
+                {key.stages.map((st, i) => (
+                  <div key={i} className="flex flex-wrap items-center gap-2 rounded-2xl bg-white p-2 text-sm ring-1 ring-slate-200">
+                    <span className="min-w-0 flex-1 basis-48">
+                      <b>Tahap {i + 1}.</b> {st[attempt.package]} <span className="text-xs text-slate-500">(maks {st.points})</span>
+                    </span>
+                    <span className="flex shrink-0 gap-1" role="group" aria-label={`Skor tahap ${i + 1}, maksimal ${st.points}`}>
+                      {Array.from({ length: st.points + 1 }, (_, v) => {
+                        const on = scored && (given[i] ?? 0) === v;
+                        return (
+                          <button
+                            key={v}
+                            onClick={() => setStage(i, v)}
+                            aria-pressed={on}
+                            className={`size-11 rounded-xl font-extrabold ring-2 transition ${on ? (v === st.points ? 'bg-emerald-600 text-white ring-emerald-600' : 'bg-laut-700 text-white ring-laut-700') : 'bg-white ring-slate-200 hover:ring-laut-200'}`}
+                          >
+                            {v}
+                          </button>
+                        );
+                      })}
+                    </span>
+                  </div>
                 ))}
               </div>
-              <textarea className="input min-h-16 text-sm" placeholder="Catatan penilai (opsional)" value={notes[noteKey] ?? ''} onChange={(e) => setT((s) => ({ notes: { ...s.notes, [noteKey]: e.target.value } }))} />
-              <button className="btn-primary w-full" onClick={() => setItemIdx((i) => Math.min(items.length - 1, i + 1))} disabled={itemIdx === items.length - 1}>
+              <div className="flex flex-wrap items-center gap-2">
+                <button className="btn-soft" onClick={() => setStages(key.stages.map((st) => st.points))}>
+                  <Icon name="check" /> Semua tahap benar
+                </button>
+                <button className="btn-ghost" onClick={() => setStages(key.stages.map(() => 0))}>
+                  Tidak menjawab (0)
+                </button>
+                <span className="ml-auto font-extrabold text-laut-900">
+                  Skor soal: {scored ? myScores[item.no] : '–'} / {MAX_PER_ITEM}
+                </span>
+              </div>
+              <details className="rounded-2xl bg-slate-50 p-3 text-xs text-slate-600 ring-1 ring-slate-200">
+                <summary className="cursor-pointer font-bold">Pedoman umum penskoran</summary>
+                <ol className="mt-2 list-decimal space-y-1 pl-4">
+                  {SCORING_GUIDE.map((g) => (
+                    <li key={g}>{g}</li>
+                  ))}
+                </ol>
+              </details>
+              <textarea
+                className="input min-h-16 text-sm"
+                placeholder="Catatan penilai (mis. kesalahan rumus, angka, atau operasi — bahan analisis kesulitan)"
+                value={notes[noteKey] ?? ''}
+                onChange={(e) => setT((s) => ({ notes: { ...s.notes, [noteKey]: e.target.value } }))}
+              />
+              <button className="btn-primary w-full" onClick={() => setItemIdx((i) => Math.min(items.length - 1, i + 1))} disabled={itemIdx >= items.length - 1}>
                 Soal berikutnya <Icon name="arrowRight" />
               </button>
             </div>
@@ -291,8 +353,8 @@ function RecapTab() {
   const rows = gainRows(attempts, scores);
   const withGain = rows.filter((r) => r.gain != null);
   const mean = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
-  const meanPre = mean(rows.filter((r) => r.pre?.complete).map((r) => r.pre.total));
-  const meanPost = mean(rows.filter((r) => r.post?.complete).map((r) => r.post.total));
+  const meanPre = mean(rows.filter((r) => r.pre?.complete).map((r) => r.pre.nilai));
+  const meanPost = mean(rows.filter((r) => r.post?.complete).map((r) => r.post.nilai));
   const meanGain = mean(withGain.map((r) => r.gain));
   const procMean = (kind) =>
     Object.fromEntries(Object.keys(PROCESS).map((p) => [p, mean(rows.filter((r) => r[kind]?.complete).map((r) => r[kind].perPct[p]))]));
@@ -303,8 +365,8 @@ function RecapTab() {
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          ['Rata-rata pretest', meanPre, `/ ${MAX_SCORE}`],
-          ['Rata-rata posttest', meanPost, `/ ${MAX_SCORE}`],
+          ['Rata-rata nilai pretest', meanPre, `/ ${MAX_NILAI}`],
+          ['Rata-rata nilai posttest', meanPost, `/ ${MAX_NILAI}`],
           ['Rata-rata N-gain', meanGain, meanGain == null ? '' : meanGain >= 0.7 ? '(tinggi)' : meanGain >= 0.3 ? '(sedang)' : '(rendah)'],
         ].map(([l, v, s]) => (
           <div key={l} className="card p-4 text-center">
@@ -343,8 +405,8 @@ function RecapTab() {
           <thead>
             <tr className="text-left text-slate-500">
               <th className="py-2">Siswa</th>
-              <th>Pretest</th>
-              <th>Posttest</th>
+              <th>Nilai pretest</th>
+              <th>Nilai posttest</th>
               <th>N-gain</th>
               <th>Kategori</th>
             </tr>
@@ -355,15 +417,15 @@ function RecapTab() {
                 <td className="py-2 font-bold">
                   {r.classCode}/{r.studentCode}
                 </td>
-                <td>{r.pre ? `${r.pre.total}${r.pre.complete ? '' : '*'}` : '–'}</td>
-                <td>{r.post ? `${r.post.total}${r.post.complete ? '' : '*'}` : '–'}</td>
+                <td>{r.pre ? `${fmt(r.pre.nilai)}${r.pre.complete ? '' : '*'}` : '–'}</td>
+                <td>{r.post ? `${fmt(r.post.nilai)}${r.post.complete ? '' : '*'}` : '–'}</td>
                 <td className="tabular-nums">{r.gain == null ? '–' : fmt(r.gain)}</td>
                 <td>{r.category}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <p className="mt-2 text-xs text-slate-500">* belum semua butir dinilai. N-gain dihitung hanya bila pretest dan posttest sudah dinilai lengkap.</p>
+        <p className="mt-2 text-xs text-slate-500">Nilai = skor ÷ {MAX_SCORE} × {MAX_NILAI} (4 soal × {MAX_PER_ITEM} poin). * belum semua soal dinilai. N-gain dihitung hanya bila pretest dan posttest sudah dinilai lengkap.</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -373,12 +435,12 @@ function RecapTab() {
         <button className="btn-soft" onClick={() => downloadFile(`rekap_ngain_${localDate()}.csv`, gainCsv(rows), 'text/csv')}>
           <Icon name="download" /> Rekap N-gain (CSV)
         </button>
-        <button className="btn-ghost" onClick={() => downloadFile(`backup_penilaian_${localDate()}.json`, JSON.stringify({ attempts, scores: teacherStore.get().scores, notes: teacherStore.get().notes }))}>
+        <button className="btn-ghost" onClick={() => downloadFile(`backup_penilaian_${localDate()}.json`, JSON.stringify({ attempts, scores: teacherStore.get().scores, stages: teacherStore.get().stages ?? {}, notes: teacherStore.get().notes }))}>
           <Icon name="download" /> Cadangan lengkap (JSON)
         </button>
       </div>
       <p className="text-xs text-slate-500">
-        Kolom CSV: {ITEM_ORDER.join(', ')}. File CSV memakai pemisah titik koma (;) dan koma desimal, siap dibuka di Excel dan dianalisis dengan skrip Python di folder analysis/.
+        Kolom CSV: {ITEM_ORDER.map((n) => `soal_${n}`).join(', ')} (skor 0–{MAX_PER_ITEM}), total (0–{MAX_SCORE}), nilai (0–{MAX_NILAI}). File CSV memakai pemisah titik koma (;) dan koma desimal, siap dibuka di Excel dan dianalisis dengan skrip Python di folder analysis/.
       </p>
     </div>
   );
@@ -389,6 +451,7 @@ function SettingsTab() {
   const [v, setV] = useState('');
   const [done, setDone] = useState(false);
   return (
+    <div className="grid items-start gap-4 lg:grid-cols-2">
     <div className="card max-w-md space-y-3 p-5">
       <h2 className="font-extrabold text-laut-900">Ganti PIN guru</h2>
       <input className="input" type="password" inputMode="numeric" placeholder="PIN baru (min. 4 angka)" value={v} onChange={(e) => { setV(e.target.value); setDone(false); }} />
@@ -399,6 +462,8 @@ function SettingsTab() {
       <p className="text-xs text-slate-500">
         PIN hanya melindungi tampilan di HP/laptop ini. Untuk penelitian, gunakan perangkat guru tersendiri, karena kunci jawaban ikut tersimpan di aplikasi.
       </p>
+    </div>
+    <AiSettings />
     </div>
   );
 }

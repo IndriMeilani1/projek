@@ -1,7 +1,7 @@
 # Instrumen Pretest–Posttest Literasi Matematika
 **Materi: Luas Bangun Datar · Jenjang: SMP (Fase D) · Kerangka: OECD/PISA 2022**
 
-> **Status: DRAF untuk validasi ahli.** Semua kunci jawaban sudah dicek dengan perhitungan, tetapi butir, bahasa, dan rubrik masih perlu ditelaah validator dan diuji coba sebelum digunakan dalam penelitian.
+> **Sumber:** kisi-kisi pretest–posttest peneliti (Indri Meilani, 2225250141). Butir, kunci, dan skor per tahapan di dokumen ini disalin dari kisi-kisi tersebut dan diterapkan di `apps/web/src/content/tests.js` serta `apps/web/src/content/keys.js`. Ubah ketiganya bersamaan.
 
 ---
 
@@ -9,223 +9,139 @@
 
 | Aspek | Ketentuan |
 |---|---|
-| Tujuan | Mengukur kemampuan literasi matematika siswa pada konten Ruang & Bentuk (luas bangun datar) sebelum dan sesudah menggunakan GeOnePiece |
-| Bentuk | 5 unit soal kontekstual (gaya PISA) × 2 butir = **10 butir** per paket; 1 butir pilihan ganda beralasan, 9 butir uraian/isian beralasan |
-| Paket | **Paket A = Pretest**, **Paket B = Posttest** — paralel (isomorfik): konstruk, proses, konteks, dan tingkat kesulitan setara; angka dan cerita berbeda |
-| Waktu | 80 menit |
-| Alat bantu | Kalkulator diperbolehkan (lihat PRD §15); kanvas sketsa dan Pembaca Soal tersedia tanpa umpan balik |
-| Skor | Setiap butir 0–4 → skor maksimum **40**; Nilai = (skor ÷ 40) × 100 |
-| Pelaporan | Skor total + subskor per proses: Penalaran (R), Merumuskan (F), Menerapkan (E), Menafsirkan & Mengevaluasi (I) |
+| Tujuan | Mengukur kemampuan literasi matematika siswa pada materi luas bangun datar sebelum dan sesudah menggunakan GeOnePiece |
+| Bentuk | **4 soal uraian** kontekstual per paket; satu soal untuk setiap indikator literasi matematika |
+| Paket | **Paket A = Pretest**, **Paket B = Posttest**, paralel: indikator, bangun, dan tahapan penyelesaian sama; konteks dan angka berbeda |
+| Waktu | 80 menit (dapat diubah di `TEST_RULES.durationMin`) |
+| Alat bantu | Kalkulator diperbolehkan; kanvas sketsa dan Pembaca Soal tersedia tanpa umpan balik |
+| Skor | Dinilai **per tahapan penyelesaian**; setiap soal maks **6** → skor mentah maks **24** |
+| Nilai | **Nilai = (skor ÷ 24) × 100** → nilai maksimum pretest = **100**, nilai maksimum posttest = **100** |
+| Pelaporan | Nilai total (0–100) + skor per indikator: Penalaran (R), Merumuskan (F), Menerapkan (E), Menafsirkan & Mengevaluasi (I) |
 
-### 1.1 Distribusi butir
+### 1.1 Rekapitulasi kisi-kisi dan penskoran
 
-| Proses | Butir | Jumlah | Bobot |
-|---|---|---|---|
-| Penalaran Matematis (R) | 2.1, 5.1, 5.2 | 3 | 30% |
-| Merumuskan (F) | 3.1, 4.1 | 2 | 20% |
-| Menerapkan (E) | 1.1, 2.2, 4.2 | 3 | 30% |
-| Menafsirkan & Mengevaluasi (I) | 1.2, 3.2 | 2 | 20% |
+| No | Indikator literasi matematika | Kode | Pretest | Posttest |
+|---|---|---|---|---|
+| 1 | Mathematical Reasoning | R | 6 | 6 |
+| 2 | Formulating Situations Mathematically | F | 6 | 6 |
+| 3 | Employing Mathematical Concepts, Facts, and Procedures | E | 6 | 6 |
+| 4 | Interpreting, Applying, and Evaluating Mathematical Outcomes | I | 6 | 6 |
+| | **Skor mentah total** | | **24** | **24** |
+| | **Nilai maksimum** (24 ÷ 24 × 100) | | **100** | **100** |
 
-| Konteks | Unit |
-|---|---|
-| Personal | 1 (lantai rumah), 3 (layang-layang/hiasan) |
-| Pekerjaan | 2 (lahan pertanian) |
-| Sosial/Kemasyarakatan | 4 (fasilitas sekolah), butir 5.2 (OSIS) |
-| Ilmiah (intra-matematis) | butir 5.1 |
+### 1.2 Struktur konstruk
+Keempat soal merepresentasikan alur kemampuan **Mathematical Reasoning → Formulating → Employing → Interpreting and Evaluating**. Analisis penelitian dapat dilakukan berdasarkan nilai total literasi matematika sekaligus skor pada masing-masing indikator.
 
 ---
 
 ## 2. Kisi-Kisi
 
-| No | Unit (A / B) | Indikator literasi (PRD §6.2) | Indikator soal | Proses | Konten | Bentuk | Level |
-|---|---|---|---|---|---|---|---|
-| 1.1 | Keramik Kamar Dina / Keramik Dapur Bu Sari | E1, E2 | Menghitung banyak ubin persegi untuk menutup lantai persegi panjang dengan menyamakan satuan | E | Ruang & Bentuk, Kuantitas | Isian beralasan | Sedang |
-| 1.2 | idem | I2 | Mengevaluasi dua klaim tentang banyak ubin dengan mempertimbangkan cara pemasangan dan pemotongan | I | Ruang & Bentuk | Uraian | Tinggi |
-| 2.1 | Lahan Pak Darto / Lahan Bu Wati | R1, E1 | Menilai kesalahan memakai sisi miring sebagai tinggi jajar genjang dan memberi alasan potong–geser | R | Ruang & Bentuk | Uraian | Sedang–tinggi |
-| 2.2 | idem | E1, E2 | Menghitung biaya berdasarkan luas jajar genjang dan takaran per luas | E | Kuantitas | Isian beralasan | Sedang |
-| 3.1 | Layang-layang Festival / Hiasan Kelas | F1, E1 | Memilih ukuran yang relevan (diagonal) dari informasi berlebih lalu menghitung luas layang-layang | F | Ruang & Bentuk | Isian beralasan | Sedang |
-| 3.2 | idem | I1, I2 | Mengevaluasi kecukupan bahan dengan mempertimbangkan bentuk potongan, bukan hanya luas | I | Ruang & Bentuk, Kuantitas | Uraian | Tinggi |
-| 4.1 | Taman Sekolah / Halaman Sekolah | F2 | Menyusun model luas daerah gabungan (trapesium dikurangi persegi/persegi panjang) | F | Ruang & Bentuk | Uraian | Sedang |
-| 4.2 | idem | E1, E2, I1 | Menghitung luas & biaya, lalu memutuskan kecukupan anggaran | E | Kuantitas | Isian beralasan | Sedang |
-| 5.1 | Tiga Segitiga | R1, E1 | Membandingkan luas segitiga beralas & bertinggi sama (termasuk tinggi di luar bangun) | R | Ruang & Bentuk | PG beralasan | Sedang |
-| 5.2 | Bendera OSIS / Spanduk Kelas | R2 | Menalar pengaruh perubahan alas/tinggi terhadap luas segitiga | R | Ruang & Bentuk | Uraian | Tinggi |
+| No | Indikator | Soal Paket A (pretest) | Soal Paket B (posttest) | Bangun |
+|---|---|---|---|---|
+| 1 (R) | Siswa mampu mengidentifikasi hubungan matematis, membandingkan alternatif, memberikan alasan, dan menentukan keputusan yang dapat dipertanggungjawabkan. | Karpet ruang belajar 8 m × 6 m | Kain penutup meja 9 m × 5 m | Persegi panjang |
+| 2 (F) | Siswa mampu mengidentifikasi informasi relevan, menentukan besaran, dan menerjemahkan situasi nyata menjadi model matematika. | Kebun sekolah, sisi 9 m | Halaman rumah, sisi 11 m | Persegi |
+| 3 (E) | Siswa mampu memilih serta menggunakan konsep, operasi, prosedur, dan strategi matematika untuk memperoleh solusi. | Hiasan dinding, alas 12 cm, tinggi 8 cm | Bendera hias, alas 14 cm, tinggi 10 cm | Segitiga |
+| 4 (I) | Siswa mampu menafsirkan hasil matematika dalam konteks, menilai kewajaran hasil, dan mengambil keputusan berdasarkan hasil perhitungan. | Ruang kelas 10 m × 7 m, klaim 70 m² | Teras rumah 12 m × 6 m, klaim 72 m² | Persegi panjang |
 
 ---
 
 ## 3. Petunjuk Pengerjaan (untuk siswa)
 1. Berdoalah sebelum mengerjakan.
-2. Tuliskan kode siswamu.
-3. Bacalah setiap cerita dengan teliti. Kamu boleh menyorot informasi penting dengan alat **Pembaca Soal**.
-4. Tuliskan **cara** dan **alasanmu**, bukan hanya jawaban akhir. Kamu boleh menggambar.
-5. Kamu boleh memakai kalkulator.
-6. Waktu mengerjakan 80 menit.
+2. Bacalah setiap cerita dengan teliti. Kamu boleh menyorot informasi penting dengan alat **Pembaca Soal**.
+3. Tuliskan **cara** dan **alasanmu**, bukan hanya jawaban akhir. Kamu boleh menggambar.
+4. Kamu boleh memakai kalkulator.
+5. Waktu mengerjakan 80 menit.
 
 ---
 
 ## 4. PAKET A — PRETEST
 
-### Unit A1 — Keramik Kamar Dina
-Kamar Dina berbentuk persegi panjang dengan ukuran **4 m × 3 m**. Lantai kamar akan dipasangi keramik berbentuk persegi berukuran **40 cm × 40 cm**.
+**Soal 1.** Sebuah ruang belajar memiliki lantai berbentuk persegi panjang dengan panjang 8 meter dan lebar 6 meter. Tersedia dua karpet dengan ukuran sebagai berikut:
+- Karpet A memiliki luas 40 m².
+- Karpet B memiliki luas 48 m².
 
-**A1.1** Berapa banyak keramik paling sedikit yang dibutuhkan agar seluruh lantai kamar tertutup? Tuliskan caramu.
+Jika karpet harus menutupi seluruh lantai ruang belajar, karpet manakah yang sebaiknya dipilih? Jelaskan alasan matematis Anda!
 
-**A1.2** Tukang keramik berkata, *"Harus beli 80 keramik, karena 300 cm tidak habis dibagi 40 cm."* Dina menjawab, *"Menurut hitunganku, 75 keramik sudah cukup."*
-Menurutmu, bagaimana pendapat Dina dan pendapat tukang? Jelaskan dengan memperhatikan cara keramik dipasang di lantai.
+**Soal 2.** Sebuah kebun sekolah berbentuk persegi memiliki panjang sisi 9 meter. Sekolah ingin mengetahui luas seluruh kebun untuk menentukan kebutuhan lahan penghijauan. Tentukan luas kebun tersebut dengan menggunakan model matematika yang sesuai!
 
----
+**Soal 3.** Sebuah hiasan dinding berbentuk segitiga memiliki panjang alas 12 cm dan tinggi 8 cm. Berapakah luas hiasan dinding tersebut? Tunjukkan langkah perhitungan Anda!
 
-### Unit A2 — Lahan Pak Darto
-Pak Darto memiliki lahan berbentuk jajar genjang seperti gambar berikut.
-
-![Lahan jajar genjang A2](figures/A2_lahan_jajar_genjang.svg)
-
-**A2.1** Pak Darto menghitung luas lahannya: *24 × 13 = 312 m²*.
-Apakah perhitungan Pak Darto benar? Jelaskan alasanmu. (Kamu boleh menggambar untuk menjelaskan.)
-
-**A2.2** Setiap **16 m²** lahan membutuhkan **1 kg** pupuk. Harga pupuk **Rp12.000 per kg**. Berapa biaya paling sedikit yang harus dikeluarkan Pak Darto untuk memupuk seluruh lahannya? Tuliskan caramu.
-
----
-
-### Unit A3 — Layang-layang Festival
-Kelas 7B membuat layang-layang untuk festival. Rangka satu layang-layang berukuran seperti gambar berikut. Kertas minyak ditempel tepat menutupi bagian dalam rangka.
-
-![Layang-layang A3](figures/A3_layang_layang.svg)
-
-**A3.1** Tidak semua ukuran pada gambar diperlukan untuk menghitung luas kertas satu layang-layang. Ukuran mana yang kamu perlukan? Berapa luas kertas minyak untuk satu layang-layang?
-
-**A3.2** Kelas 7B akan membuat **15 layang-layang**. Kertas minyak dijual per lembar berukuran **60 cm × 90 cm**. Rina menghitung:
-*15 × 660 = 9.900 cm². Satu lembar = 60 × 90 = 5.400 cm². 9.900 : 5.400 ≈ 1,83. Jadi cukup membeli 2 lembar.*
-Apakah 2 lembar benar-benar cukup? Berikan alasanmu dan tentukan banyak lembar yang menurutmu perlu dibeli.
-
----
-
-### Unit A4 — Taman Sekolah
-Sekolah memiliki taman berbentuk trapesium. Di dalam taman terdapat kolam berbentuk persegi. Seluruh bagian taman, **kecuali kolam**, akan ditanami rumput.
-
-![Taman trapesium A4](figures/A4_taman_trapesium.svg)
-
-**A4.1** Jelaskan strategimu untuk menghitung luas bagian taman yang ditanami rumput. Tuliskan dalam bentuk kalimat atau ekspresi matematika (belum perlu dihitung).
-
-**A4.2** Harga rumput beserta pemasangannya **Rp25.000 per m²**. Sekolah menyediakan anggaran **Rp2.500.000**. Apakah anggaran tersebut cukup? Tunjukkan perhitunganmu.
-
----
-
-### Unit A5 — Segitiga
-**A5.1** Perhatikan tiga segitiga P, Q, dan R pada petak satuan berikut. Ketiganya memiliki alas AB yang sama.
-
-![Tiga segitiga A5](figures/A5_tiga_segitiga.svg)
-
-Pernyataan yang benar tentang luas ketiga segitiga adalah …
-- A. Luas P paling besar karena bentuknya paling seimbang.
-- B. Luas Q paling besar karena memiliki sudut siku-siku.
-- C. Luas R paling besar karena bentuknya paling panjang.
-- D. Luas ketiganya sama.
-
-Jelaskan alasan pilihanmu.
-
-**A5.2** OSIS membuat bendera berbentuk segitiga dengan alas **30 cm** dan tinggi **40 cm**. Ketua OSIS ingin membuat bendera baru yang luasnya **dua kali** luas bendera lama.
-- Andi berkata: *"Kalikan saja alas dan tingginya masing-masing dengan 2."*
-- Budi berkata: *"Cukup alasnya saja yang dikalikan 2, tingginya tetap."*
-
-Siapa yang benar? Jelaskan alasanmu dengan perhitungan.
+**Soal 4.** Sebuah ruang kelas berbentuk persegi panjang memiliki panjang 10 meter dan lebar 7 meter. Seorang siswa menghitung luas ruang kelas tersebut dan memperoleh hasil 70 m². Apakah hasil perhitungan siswa tersebut benar? Jelaskan alasan Anda!
 
 ---
 
 ## 5. PAKET B — POSTTEST
 
-### Unit B1 — Keramik Dapur Bu Sari
-Dapur Bu Sari berbentuk persegi panjang dengan ukuran **3,3 m × 2,4 m**. Lantai dapur akan dipasangi keramik berbentuk persegi berukuran **60 cm × 60 cm**.
+**Soal 1.** Sebuah meja berbentuk persegi panjang memiliki panjang 9 meter dan lebar 5 meter. Tersedia dua kain penutup meja dengan ukuran sebagai berikut:
+- Kain A memiliki luas 40 m².
+- Kain B memiliki luas 45 m².
 
-**B1.1** Berapa banyak keramik paling sedikit yang dibutuhkan agar seluruh lantai dapur tertutup? Tuliskan caramu.
+Jika kain harus menutupi seluruh permukaan meja, kain manakah yang sebaiknya dipilih? Jelaskan alasan matematis Anda!
 
-**B1.2** Tukang keramik berkata, *"Harus beli 24 keramik, karena 330 cm tidak habis dibagi 60 cm."* Bu Sari menjawab, *"Menurut hitunganku, 22 keramik sudah cukup."*
-Menurutmu, bagaimana pendapat Bu Sari dan pendapat tukang? Jelaskan dengan memperhatikan cara keramik dipasang di lantai.
+**Soal 2.** Sebuah halaman rumah berbentuk persegi memiliki panjang sisi 11 meter. Pemilik rumah ingin mengetahui luas seluruh halaman tersebut sebelum memasang paving. Tentukan luas halaman rumah dengan menggunakan model matematika yang sesuai!
 
----
+**Soal 3.** Sebuah bendera hias berbentuk segitiga memiliki panjang alas 14 cm dan tinggi 10 cm. Berapakah luas bendera hias tersebut? Tunjukkan langkah perhitungan Anda!
 
-### Unit B2 — Lahan Sayur Bu Wati
-Bu Wati memiliki lahan sayur berbentuk jajar genjang seperti gambar berikut.
-
-![Lahan jajar genjang B2](figures/B2_lahan_jajar_genjang.svg)
-
-**B2.1** Bu Wati menghitung luas lahannya: *20 × 10 = 200 m²*.
-Apakah perhitungan Bu Wati benar? Jelaskan alasanmu. (Kamu boleh menggambar untuk menjelaskan.)
-
-**B2.2** Setiap **10 m²** lahan membutuhkan **1 bungkus** benih. Harga benih **Rp15.000 per bungkus**. Berapa biaya paling sedikit untuk membeli benih bagi seluruh lahan? Tuliskan caramu.
-
----
-
-### Unit B3 — Hiasan Kelas
-Siswa kelas 8A membuat hiasan dinding dari karton berbentuk layang-layang dengan ukuran seperti gambar berikut.
-
-![Hiasan layang-layang B3](figures/B3_hiasan_layang_layang.svg)
-
-**B3.1** Tidak semua ukuran pada gambar diperlukan untuk menghitung luas satu hiasan. Ukuran mana yang kamu perlukan? Berapa luas karton untuk satu hiasan?
-
-**B3.2** Kelas 8A akan membuat **20 hiasan**. Karton dijual per lembar berukuran **50 cm × 60 cm**. Siti menghitung:
-*20 × 300 = 6.000 cm². Satu lembar = 50 × 60 = 3.000 cm². 6.000 : 3.000 = 2. Jadi cukup membeli 2 lembar.*
-Apakah 2 lembar benar-benar cukup? Berikan alasanmu dan tentukan banyak lembar yang menurutmu perlu dibeli.
-
----
-
-### Unit B4 — Halaman Sekolah
-Halaman parkir sekolah berbentuk trapesium. Di dalamnya terdapat pos satpam berbentuk persegi panjang. Seluruh halaman, **kecuali pos satpam**, akan dipasangi paving block.
-
-![Halaman trapesium B4](figures/B4_halaman_trapesium.svg)
-
-**B4.1** Jelaskan strategimu untuk menghitung luas bagian halaman yang dipasangi paving block. Tuliskan dalam bentuk kalimat atau ekspresi matematika (belum perlu dihitung).
-
-**B4.2** Harga paving block beserta pemasangannya **Rp85.000 per m²**. Sekolah menyediakan anggaran **Rp12.000.000**. Apakah anggaran tersebut cukup? Tunjukkan perhitunganmu.
-
----
-
-### Unit B5 — Segitiga
-**B5.1** Perhatikan tiga segitiga K, L, dan M pada petak satuan berikut. Ketiganya memiliki alas AB yang sama.
-
-![Tiga segitiga B5](figures/B5_tiga_segitiga.svg)
-
-Pernyataan yang benar tentang luas ketiga segitiga adalah …
-- A. Luas K paling besar karena puncaknya tepat di tengah.
-- B. Luas L paling besar karena memiliki sudut siku-siku.
-- C. Luas M paling besar karena sisi miringnya paling panjang.
-- D. Luas ketiganya sama.
-
-Jelaskan alasan pilihanmu.
-
-**B5.2** Kelas 9C membuat spanduk berbentuk segitiga dengan alas **50 cm** dan tinggi **20 cm**. Mereka ingin membuat spanduk kecil yang luasnya **setengah** luas spanduk tersebut.
-- Dewi berkata: *"Bagi dua saja alas dan tingginya masing-masing."*
-- Eko berkata: *"Cukup tingginya saja yang dibagi dua, alasnya tetap."*
-
-Siapa yang benar? Jelaskan alasanmu dengan perhitungan.
+**Soal 4.** Sebuah teras rumah berbentuk persegi panjang memiliki panjang 12 meter dan lebar 6 meter. Seorang siswa menghitung luas teras tersebut dan memperoleh hasil 72 m². Apakah hasil perhitungan siswa tersebut benar? Jelaskan alasan Anda!
 
 ---
 
 ## 6. Kunci Jawaban & Pedoman Penskoran
 
-### 6.1 Rubrik umum (skor 0–4 per butir)
+### 6.1 Pedoman umum penskoran
+1. Skor penuh diberikan apabila siswa menunjukkan tahapan penyelesaian yang benar dan menggunakan rumus luas bangun datar secara tepat.
+2. Skor parsial tetap diberikan apabila siswa sudah menunjukkan tahapan berpikir yang benar, tetapi melakukan kesalahan perhitungan pada tahap berikutnya.
+3. Jawaban akhir yang benar tanpa langkah penyelesaian perlu dinilai berdasarkan tahapan yang benar-benar ditunjukkan siswa.
+4. Kesalahan dalam memilih rumus, memasukkan angka, dan melakukan operasi hitung dicatat sebagai bahan analisis kesulitan siswa.
 
-| Skor | Penalaran (R) | Merumuskan (F) | Menerapkan (E) | Menafsirkan & Mengevaluasi (I) |
-|---|---|---|---|---|
-| **4** | Kesimpulan benar dengan argumen matematis lengkap dan runtut | Model/strategi tepat dan lengkap; informasi relevan dipilih dengan benar | Prosedur, perhitungan, dan satuan benar | Hasil ditafsirkan dalam konteks dan klaim dievaluasi dengan alasan yang kuat |
-| **3** | Kesimpulan benar, argumen benar tetapi kurang lengkap | Model tepat dengan kekurangan kecil | Prosedur benar, ada kesalahan hitung/satuan kecil | Penafsiran benar, alasan kurang lengkap |
-| **2** | Kesimpulan benar tanpa alasan, atau alasan sebagian benar | Sebagian model benar | Strategi benar, tetapi perhitungan berhenti/banyak salah | Menyadari ada masalah tetapi tidak menjelaskannya |
-| **1** | Kesimpulan salah, tetapi ada langkah/alasan yang relevan | Ada upaya mengidentifikasi informasi, model belum tepat | Ada upaya prosedur yang relevan | Ada upaya menafsirkan tanpa dasar yang benar |
-| **0** | Tidak menjawab / tidak relevan | Tidak menjawab / tidak relevan | Tidak menjawab / tidak relevan | Tidak menjawab / tidak relevan |
+### 6.2 Kunci per tahapan
 
-### 6.2 Kunci per butir
+**Soal 1 (R): total 6**
 
-| Butir | Kunci Paket A | Kunci Paket B | Catatan penskoran khusus |
+| Tahap | Paket A | Paket B | Skor |
 |---|---|---|---|
-| **1.1** (E) | 4 m × 3 m = 400 cm × 300 cm = 120.000 cm²; satu keramik 1.600 cm²; 120.000 ÷ 1.600 = **75 keramik** | 330 cm × 240 cm = 79.200 cm²; satu keramik 3.600 cm²; 79.200 ÷ 3.600 = **22 keramik** | Cara per baris juga benar (A: 10 × 7,5 = 75; B: 5,5 × 4 = 22). Skor 3 bila menjawab 80 (A) / 24 (B) dengan cara pembulatan per baris yang dijelaskan. Skor 2 bila lupa menyamakan satuan tetapi strategi benar. |
-| **1.2** (I) | Ke arah 3 m muat 7,5 keramik → 7 baris utuh (70 keramik) + 1 baris setengah keramik (10 potongan 40 × 20 cm). Satu keramik yang dipotong dua menghasilkan **dua** potongan yang sama-sama terpakai → baris terakhir butuh 5 keramik. **75 cukup** bila potongan dimanfaatkan dan tidak ada yang pecah. Tukang menghitung 80 karena menganggap setiap potongan menyisakan sisa terbuang / sebagai cadangan. | Ke arah 3,3 m muat 5,5 keramik → 4 baris × 5 keramik utuh (20) + 4 potongan setengah (60 × 30 cm) = 2 keramik → **22 cukup** bila potongan dimanfaatkan. Tukang menghitung 24 karena setiap potongan dianggap sisa / cadangan. | Skor 4: menjelaskan pemanfaatan potongan **dan** alasan tukang (sisa/cadangan pecah). Skor 3: salah satu pendapat dijelaskan dengan benar. Skor 2: hanya menyatakan pendapat tanpa alasan pemasangan. Pendapat "beli lebih untuk cadangan" diterima sebagai evaluasi yang wajar. |
-| **2.1** (R) | **Salah.** Luas jajar genjang = alas × **tinggi**, dan tinggi harus tegak lurus alas: 24 × 12 = **288 m²**. 13 m adalah sisi miring. Alasan potong–geser: potong segitiga di satu sisi, pindahkan ke sisi lain → persegi panjang 24 m × 12 m. | **Salah.** 20 × 8 = **160 m²**; 10 m adalah sisi miring. Alasan potong–geser yang sama. | Skor 4: "salah" + luas benar + alasan konseptual (tinggi ⟂ alas / potong–geser / persegi panjang yang terbentuk lebih pendek dari sisi miring). Skor 3: "salah" + luas benar + alasan hanya "rumusnya a × t". Skor 2: "salah" tanpa alasan atau luas salah. |
-| **2.2** (E) | 288 ÷ 16 = 18 kg; 18 × Rp12.000 = **Rp216.000** | 160 ÷ 10 = 16 bungkus; 16 × Rp15.000 = **Rp240.000** | Jika memakai luas salah dari 2.1 (312 / 200) tetapi prosedur benar → **skor 3** (konsekuensi kesalahan sebelumnya tidak dihukum dua kali). |
-| **3.1** (F) | Yang diperlukan: **kedua diagonal** (30 cm dan 44 cm). Panjang sisi (17 cm, 39 cm) tidak diperlukan. L = (30 × 44) ÷ 2 = **660 cm²** | Diagonal **24 cm dan 25 cm**; sisi 15 cm dan 20 cm tidak diperlukan. L = (24 × 25) ÷ 2 = **300 cm²** | Skor 4: memilih diagonal + luas benar. Skor 3: luas benar tanpa menyebut ukuran yang tidak diperlukan. Skor 2: memakai diagonal tetapi lupa ÷ 2. Skor 1: memakai sisi. |
-| **3.2** (I) | **Tidak cukup** (secara praktis). Luas 1,83 lembar adalah batas minimum teoretis; bentuk layang-layang tidak dapat disusun menutupi kertas tanpa sisa. Jika tiap layang-layang dipotong dari persegi panjang 30 × 44 cm, satu lembar 60 × 90 memuat 2 × 2 = 4 layang-layang → 15 ÷ 4 = 3,75 → **4 lembar**. | **Tidak cukup.** Luas pas 2 lembar hanya berlaku jika tidak ada sisa sama sekali. Tiap hiasan butuh persegi panjang 24 × 25 cm; satu lembar 50 × 60 memuat 2 × 2 = 4 hiasan → 20 ÷ 4 = **5 lembar**. | Skor 4: menolak klaim + alasan bentuk/sisa potongan + jumlah lembar yang dibenarkan dengan susunan. Jawaban lain (mis. 3 lembar) diterima jika disertai susunan potong yang masuk akal. Skor 3: menolak klaim dengan alasan sisa tanpa jumlah yang dibenarkan. Skor 2: hanya membulatkan (A: 1,83 → 2) dengan menyebut "lebih baik dilebihkan". Skor 1: menerima klaim dengan perhitungan ulang benar. |
-| **4.1** (F) | Luas rumput = luas trapesium − luas kolam = [(10 + 16) ÷ 2 × 8] − (3 × 3) | Luas paving = luas trapesium − luas pos = [(12 + 18) ÷ 2 × 10] − (4 × 2,5) | Skor 4: strategi selisih dengan rumus yang tepat. Skor 3: strategi selisih benar, satu rumus kurang tepat. Skor 2: hanya menghitung trapesium tanpa mengurangi. Strategi memecah menjadi persegi panjang + segitiga juga diterima. |
-| **4.2** (E) | 104 − 9 = 95 m²; 95 × Rp25.000 = Rp2.375.000 ≤ Rp2.500.000 → **cukup**, sisa Rp125.000 | 150 − 10 = 140 m²; 140 × Rp85.000 = Rp11.900.000 ≤ Rp12.000.000 → **cukup**, sisa Rp100.000 | Skor 4 memerlukan keputusan "cukup" yang dikaitkan dengan anggaran. Tanpa keputusan → maksimal 3. Bila lupa mengurangi kolam/pos: A → 104 m² = Rp2.600.000 → "tidak cukup"; B → 150 m² = Rp12.750.000 → "tidak cukup"; skor 2. |
-| **5.1** (R) | **D.** Alas sama (6 satuan) dan tinggi sama (4 satuan) → luas masing-masing ½ × 6 × 4 = 12 satuan². Tinggi R berada di luar segitiga tetapi panjangnya tetap 4. | **D.** Alas 8, tinggi 3 → masing-masing 12 satuan². Tinggi M berada di luar segitiga. | Skor 4: D + alasan alas & tinggi sama (atau menghitung ketiganya). Skor 3: D + menghitung sebagian. Skor 2: D tanpa alasan. Skor 1: pilihan salah tetapi menghitung minimal satu luas dengan benar. |
-| **5.2** (R) | **Budi.** Luas lama ½ × 30 × 40 = 600 cm². Cara Budi: ½ × 60 × 40 = 1.200 cm² (2 kali). Cara Andi: ½ × 60 × 80 = 2.400 cm² (**4 kali**). | **Eko.** Luas lama ½ × 50 × 20 = 500 cm². Cara Eko: ½ × 50 × 10 = 250 cm² (setengah). Cara Dewi: ½ × 25 × 10 = 125 cm² (**seperempat**). | Skor 4: memilih benar + menghitung kedua cara + menyimpulkan kelipatannya. Alasan umum (luas sebanding dengan alas dan tinggi; dua-duanya dikali 2 → 2 × 2 = 4) juga skor 4. Skor 2: memilih benar tanpa perhitungan. Jawaban "keduanya benar" → skor 1. |
+| 1 | Mengidentifikasi informasi: lantai persegi panjang, panjang 8 m dan lebar 6 m | Meja persegi panjang, panjang 9 m dan lebar 5 m | 1 |
+| 2 | Menentukan rumus luas persegi panjang L = p × l | idem | 2 |
+| 3 | Menghitung luas lantai 8 × 6 = 48 m² | Luas meja 9 × 5 = 45 m² | 1 |
+| 4 | Membandingkan: Karpet A = 40 m², Karpet B = 48 m² | Kain A = 40 m², Kain B = 45 m² | 1 |
+| 5 | Karpet B lebih tepat karena luasnya sama dengan luas lantai | Kain B lebih tepat karena luasnya sama dengan luas permukaan meja | 1 |
+
+**Soal 2 (F): total 6**
+
+| Tahap | Paket A | Paket B | Skor |
+|---|---|---|---|
+| 1 | Mengidentifikasi panjang sisi kebun 9 m | Panjang sisi halaman 11 m | 1 |
+| 2 | Menentukan bangun berbentuk persegi | idem | 1 |
+| 3 | Menentukan model matematika L = s × s | idem | 1 |
+| 4 | Memasukkan ukuran sisi: L = 9 × 9 | L = 11 × 11 | 1 |
+| 5 | Menghitung L = 81 m² | L = 121 m² | 1 |
+| 6 | Menyimpulkan luas kebun sekolah 81 m² | Luas halaman rumah 121 m² | 1 |
+
+**Soal 3 (E): total 6**
+
+| Tahap | Paket A | Paket B | Skor |
+|---|---|---|---|
+| 1 | Mengidentifikasi alas 12 cm dan tinggi 8 cm | Alas 14 cm dan tinggi 10 cm | 1 |
+| 2 | Memilih rumus luas segitiga L = ½ × a × t | idem | 2 |
+| 3 | Menghitung L = ½ × 12 × 8 = 48 cm² | L = ½ × 14 × 10 = 70 cm² | 2 |
+| 4 | Menyimpulkan luas hiasan dinding 48 cm² | Luas bendera hias 70 cm² | 1 |
+
+**Soal 4 (I): total 6**
+
+| Tahap | Paket A | Paket B | Skor |
+|---|---|---|---|
+| 1 | Mengidentifikasi panjang 10 m dan lebar 7 m | Panjang 12 m dan lebar 6 m | 1 |
+| 2 | Menentukan rumus luas persegi panjang L = p × l | idem | 1 |
+| 3 | Menghitung L = 10 × 7 = 70 m² | L = 12 × 6 = 72 m² | 1 |
+| 4 | Membandingkan hasil dengan jawaban siswa (sama-sama 70 m²) | Sama-sama 72 m² | 1 |
+| 5 | Menilai bahwa hasil perhitungan tersebut benar | idem | 1 |
+| 6 | Menyimpulkan luas ruang kelas 70 m² | Luas teras rumah 72 m² | 1 |
+
+### 6.3 Konversi nilai
+
+| Skor mentah | 0 | 6 | 12 | 18 | 24 |
+|---|---|---|---|---|---|
+| Nilai (skor ÷ 24 × 100) | 0 | 25 | 50 | 75 | **100** |
 
 ---
 
@@ -240,7 +156,7 @@ Skala penilaian 1–4 (1 = tidak sesuai, 4 = sangat sesuai) untuk setiap butir:
 | | 3. Konteks soal realistis dan dekat dengan kehidupan siswa SMP |
 | | 4. Materi sesuai dengan CP/ATP luas bangun datar |
 | **Konstruksi** | 5. Gambar jelas, ukuran terbaca, dan sesuai dengan cerita |
-| | 6. Kunci jawaban dan rubrik penskoran jelas dan dapat diterapkan |
+| | 6. Kunci jawaban dan skor per tahapan jelas dan dapat diterapkan |
 | | 7. Butir paket A dan B setara (isomorfik) |
 | **Bahasa** | 8. Kalimat menggunakan Bahasa Indonesia yang baik dan benar |
 | | 9. Kalimat tidak berbelit-belit dan tidak menimbulkan tafsiran ganda |
@@ -261,13 +177,14 @@ Kolom saran perbaikan disediakan untuk setiap butir.
 | | Daya pembeda (uraian) | DP = (rata-rata kelompok atas − rata-rata kelompok bawah) ÷ skor maksimum, kelompok 27%; ≥ 0,40 sangat baik · 0,30–0,39 baik · 0,20–0,29 cukup (revisi) · < 0,20 buang/revisi total |
 | | Kesetaraan paket A–B | Kelompok uji coba mengerjakan kedua paket (urutan diselang-seling/*counterbalanced*); bandingkan rata-rata (uji-t berpasangan, diharapkan tidak berbeda signifikan) dan korelasi skor A–B |
 | | Reliabilitas antar-penilai | Dua penilai menskor 20–30% lembar jawaban; Cohen's kappa / ICC |
-| Uji lapangan | Efektivitas | N-gain = (post − pre) ÷ (40 − pre); kategori Hake: g ≥ 0,7 tinggi · 0,3 ≤ g < 0,7 sedang · g < 0,3 rendah. Uji normalitas → *paired t-test* atau Wilcoxon; ukuran efek Cohen's d. Analisis juga per proses (R, F, E, I). |
+| Uji lapangan | Efektivitas | N-gain = (nilai post − nilai pre) ÷ (100 − nilai pre); kategori Hake: g ≥ 0,7 tinggi · 0,3 ≤ g < 0,7 sedang · g < 0,3 rendah. Uji normalitas → *paired t-test* atau Wilcoxon; ukuran efek Cohen's d. Analisis juga per proses (R, F, E, I). |
 
 Semua analisis ini disiapkan sebagai skrip Python di `services/api/app/analysis/` dan `analysis/notebooks/`.
 
 ---
 
 ## 9. Catatan untuk Pengembangan Aplikasi
-- Butir disimpan di `content/items/tests/paket-a.json` & `paket-b.json`; kunci dan rubrik di `content/keys/` (hanya dibaca API).
-- Gambar di `docs/figures/` sudah memakai kode warna aplikasi (alas biru, tinggi oranye putus-putus dengan tanda siku, diagonal ungu titik-titik) agar konsisten antara latihan dan tes.
+- Butir disimpan di `apps/web/src/content/tests.js` (Paket A & B); kunci dan skor per tahapan di `apps/web/src/content/keys.js`.
+- Mode Guru menilai setiap soal per tahap (tombol 0…skor maks tahap). Skor soal = jumlah tahap (maks 6); nilai = skor ÷ 24 × 100.
+- Ekspor CSV: kolom `soal_1`…`soal_4` (0–6), `total` (0–24), `nilai` (0–100), dan `R`, `F`, `E`, `I`.
 - Soal tes **tidak boleh** muncul di modul belajar/latihan. Latihan memakai konteks dan angka yang berbeda.

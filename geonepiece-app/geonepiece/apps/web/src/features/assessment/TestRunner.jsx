@@ -185,7 +185,7 @@ function ItemView({ item, attempt }) {
     <div className="space-y-4">
       <section className="card p-4 sm:p-5">
         <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-laut-700">
-          Unit {item.unit.id.slice(1)} · {item.unit.title}
+          Soal {item.no} · {item.unit.title}
         </p>
         <ProblemReader sentences={item.unit.sentences} marks={unitMarks} onChange={(m) => saveAnswer(attempt, `reader-${item.unit.id}`, { marks: m })} showTable={false} />
         {item.unit.figure && <img src={item.unit.figure} alt={item.unit.figureAlt} className="mx-auto mt-3 max-h-80 w-auto max-w-full rounded-xl" loading="lazy" />}
@@ -244,7 +244,7 @@ function Review({ items, answered, go, attempt }) {
   return (
     <div className="card space-y-4 p-5">
       <h2 className="text-xl font-extrabold text-laut-900">Tinjau jawaban</h2>
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-4 gap-2">
         {items.map((it, i) => (
           <button key={it.no} onClick={() => go(i)} className={`rounded-2xl p-2 text-center ring-2 ${answered(it.no) ? 'bg-laut-50 ring-laut-200' : 'bg-rose-50 ring-rose-200'}`}>
             <div className="font-extrabold">{it.no}</div>
